@@ -77,7 +77,7 @@ public class Receipt {
             content += name_list[i] + "  " + price_list[i] + "  " + count_list[i] + "\n";
         }
 
-        str = "order number : " + getOrder_number() + "\n\n" + content + "\n" + "total :  " + getTotal();
+        str = "order number : " + getOrder_number() + "\n\n" + content + "\n" + "total :  " + getTotal() + "\n\n";
 
         return str;
     }

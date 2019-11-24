@@ -208,10 +208,16 @@ public class Main {
 
 
             } else if (inputInt == 2) {
+
+                // Show Menu list
                 System.out.println("== 메뉴 ==\n" + checkMenu.ShowMenuList() + "\n");
             } else if (inputInt == 3) {
+
+                // Show order history in progress
                 System.out.println("== 주문 목록==\n" + readOrders.ReadOrderList() + "\n");
             } else if (inputInt == 4) {
+
+                // When customer leave the cafe, the data is deleted from the CustomerRepository.txt.
                 System.out.println("== 카페 나가기 ==\n" +
                         "주문 번호 >> ");
                 String order_number = scanner.next();

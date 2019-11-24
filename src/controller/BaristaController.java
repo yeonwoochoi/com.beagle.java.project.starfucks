@@ -19,7 +19,6 @@ public class BaristaController {
 
         // variable declaration
         TextFileUtils textFileUtils = new TextFileUtils();
-        ConvertUtils convertUtils = new ConvertUtils();
         TypeChangeUtils typeChangeUtils = new TypeChangeUtils();
         String output;
 

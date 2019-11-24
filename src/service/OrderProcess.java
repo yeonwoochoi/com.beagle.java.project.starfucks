@@ -31,7 +31,6 @@ public class OrderProcess {
         CalculateUtils calculateUtils = new CalculateUtils();
         TextFileUtils textFileUtils = new TextFileUtils();
         TypeChangeUtils typeChangeUtils = new TypeChangeUtils();
-        ConvertUtils convertUtils = new ConvertUtils();
 
         String each_name;
         String each_price;

@@ -4,7 +4,7 @@ package domain.order;
 import java.util.ArrayList;
 
 /**
- * class that stores order contents in queue.
+ * class that stores order contents in ArrayList.
  */
 public class Order {
     private int order_number;
