@@ -55,8 +55,14 @@ public class MatchController {
      */
     public String CheckCustomer (String order_number) {
         TextFileUtils textFileUtils = new TextFileUtils();
+        String output;
         String content = textFileUtils.findData(order_number, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\CustomerRepository.txt");
-        String[] content_arr = content.split("/");
-        return content_arr[0];
+        if (content.length() > 0) {
+            String[] content_arr = content.split("/");
+            output = content_arr[1];
+        } else {
+            output = "";
+        }
+        return output;
     }
 }

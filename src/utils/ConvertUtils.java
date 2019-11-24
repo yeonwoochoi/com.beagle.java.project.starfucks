@@ -1,7 +1,9 @@
 package utils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -154,5 +156,26 @@ public class ConvertUtils {
         return new_objects;
     }
 
+    /**
+     * Method to delete only empty spaces of elements in string array
+     * @param input_str_array
+     * @return (String[]) String array with all whitespaces missing
+     */
+    public String[] ClearArray(String[] input_str_array) {
 
+        List<String> list = new ArrayList<>();
+
+        for (int i = 0; i < input_str_array.length; i++) {
+            input_str_array[i] = input_str_array[i].replaceAll("(^\\p{Z}+|\\p{Z}+$)", "");
+        }
+
+        for(String s : input_str_array) {
+
+            if(s != null && s.length() > 0) {
+                list.add(s);
+            }
+        }
+
+        return list.toArray(new String[list.size()]);
+    }
 }

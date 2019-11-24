@@ -65,7 +65,7 @@ public class Main {
                 String each_order_price = "";
                 String each_order_count = "";
 
-                String input_order_name;
+                String input_order_name = "";
                 String input_order_price = "";
                 String input_order_count = "";
 
@@ -78,15 +78,28 @@ public class Main {
 
                     while (run3) {
 
-                        System.out.println("== 메뉴 ==\n" +
-                                checkMenu.ShowMenuList() + "\n음식 번호>> ");
-                        String input_order_number = scanner.next() + "/";
-                        String input_order = textFileUtils.findData(input_order_number, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\FoodRepository.txt");
-                        input_order_name = input_order.split("/")[1];
+                        boolean run4 = true;
+                        boolean ismatch1 = false;
+                        while (run4) {
+                            System.out.println("== 메뉴 ==\n" +
+                                    checkMenu.ShowMenuList() + "\n음식 번호>> ");
+                            String input_order_str = scanner.next();
+                            int input_order_int = typeChangeUtils.StringToInt(input_order_str);
+                            if (input_order_int >= 1 && input_order_int <= 20) {
+                                run4 = false;
+                                String input_order_number = input_order_str + "/";
+                                String input_order = textFileUtils.findData(input_order_number, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\FoodRepository.txt");
+                                input_order_name = input_order.split("/")[1];
+                                ismatch1 = matchController.CheckOrderName(input_order_name);
+                            } else {
+                                System.out.println("1에서 20사이의 숫자를 입력해주세요.\n음식 번호 >> ");
+                            }
+                        }
+
+
+
+
                         // Determine the adequacy of the ordered menu
-                        boolean ismatch1 = matchController.CheckOrderName(input_order_name);
-
-
                         if (ismatch1) {
                             // When food is on the order menu
 
@@ -98,8 +111,8 @@ public class Main {
                             input_order_count = scanner.next();
                             boolean adequacy1 = orderController.AdequacyOfQuantity(input_order_count);
 
-                            boolean run4 = true;
-                            while (run4) {
+                            boolean run5 = true;
+                            while (run5) {
                                 if (adequacy1) {
                                     //Quantity input is appropriate
 
@@ -114,11 +127,11 @@ public class Main {
 
                                     // Price data storage
                                     each_order_price += input_order_price + "/";
-                                    run4 = false;
+                                    run5 = false;
 
                                 } else {
                                     System.out.println("잘못된 수량입니다.");
-                                    run4 = true;
+                                    run5 = true;
                                 }
                             }
                             run3 = false;
@@ -131,8 +144,8 @@ public class Main {
 
 
                     // Find out if you still want to order
-                    boolean run5 = true;
-                    while (run5) {
+                    boolean run6 = true;
+                    while (run6) {
 
                         // Attach a description of the value to enter to determine whether to continue ordering
                         System.out.println("1. 주문 계속하기\n" +
@@ -142,13 +155,13 @@ public class Main {
 
                         if (keep_going == 2) {
                             run2 = false;
-                            run5 = false;
+                            run6 = false;
                         } else if (keep_going == 1) {
                             run2 = true;
-                            run5 = false;
+                            run6 = false;
                         } else {
                             System.out.println("1,2 중 하나만 입력해 주십시오.");
-                            run5 = true;
+                            run6 = true;
                         }
                     }
                 }
@@ -185,12 +198,12 @@ public class Main {
                 TimerTask timerTask = new TimerTask() {
                     @Override
                     public void run() {
+                        System.out.println("주문번호 " + order.getOrder_number() + " 고객님. 주문하신 음료와 디저트 나왔습니다.");
                         queue_order_list.remove(order);
-                        //((ArrayList) queue_order_list).trimToSize();
                         orderProcess.DeleteOrder(order);
                     }
                 };
-                timer.schedule(timerTask, order.getTotal_time());
+                timer.schedule(timerTask, order.getTotal_time() * 1000);
 
 
 
@@ -214,16 +227,17 @@ public class Main {
                         int input_number = scanner.nextInt();
                         if (input_number == 1) {
                             run2 = false;
+                            System.out.println("안녕히 가십시오\n");
                             String old_data = order_number + "/" + "O;";
                             textFileUtils.updateFile(old_data, "", "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\CustomerRepository.txt");
                         } else if (input_number == 2) {
-                            System.out.println("안녕히 가십시오\n");
                             run2 = false;
                         } else {
                             System.out.println("1,2 중 하나만 입력해 주십시오.");
                         }
                     }
                 } else if (holding_bell.equals("X")){
+                    System.out.println("안녕히 가십시오\n");
                     String old_data = order_number + "/" + "X;";
                     textFileUtils.updateFile(old_data, "", "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\CustomerRepository.txt");
                 } else {

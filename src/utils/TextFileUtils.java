@@ -139,7 +139,7 @@ public class TextFileUtils {
                     if (line.contains(old_data)) {
                         line = line.replace(old_data, new_data);
                     }
-                    bw.write(line + "\n");
+                    bw.write(line);
                 }
                 success = true;
 
@@ -170,5 +170,7 @@ public class TextFileUtils {
         newFile.renameTo(oldFile);
         return success;
     }
+
+
 
 }

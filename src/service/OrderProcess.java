@@ -32,6 +32,7 @@ public class OrderProcess {
         TextFileUtils textFileUtils = new TextFileUtils();
         TypeChangeUtils typeChangeUtils = new TypeChangeUtils();
         ConvertUtils convertUtils = new ConvertUtils();
+
         String each_name;
         String each_price;
         String each_count;
@@ -49,6 +50,7 @@ public class OrderProcess {
 
 
             arrayList.add(object);
+            arrayList.trimToSize();
         }
 
         // get order_number
@@ -72,6 +74,11 @@ public class OrderProcess {
         String input_str2 = order.getOrder_number() + "/" + "O;";
         textFileUtils.saveToFile(input_str2, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\CustomerRepository.txt");
 
+        int new_order_num = order.getOrder_number() + 1;
+        String old_order_num_str = typeChangeUtils.intToString(order.getOrder_number());
+        String new_order_num_str = typeChangeUtils.intToString(new_order_num);
+
+        textFileUtils.updateFile(old_order_num_str, new_order_num_str, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\OrderNumberRepository.txt");
 
         return order;
     }
@@ -85,20 +92,68 @@ public class OrderProcess {
      */
     public boolean DeleteOrder(Order order) {
 
+        TypeChangeUtils typeChangeUtils = new TypeChangeUtils();
+
         // Remove processed order from OrderRepository
-        String old_str1 = order.getOrder_number() + "/" + order.getTotal_time() + ";";
+        String order_number = typeChangeUtils.intToString(order.getOrder_number());
+        String old_str1 = order_number + "/" + order.getTotal_time() + ";";
         String new_str1 = "";
         TextFileUtils textFileUtils = new TextFileUtils();
         boolean success1 = textFileUtils.updateFile(old_str1, new_str1, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\OrderRepository.txt");
 
         // withdraw Vibration bell of customer who received food
-        String old_str2 = order.getOrder_number() + "/" + "O;";
-        String new_str2 = order.getOrder_number() + "/" + "X;";
+        String old_str2 = order_number + "/" + "O;";
+        String new_str2 = order_number + "/" + "X;";
         boolean success2 = textFileUtils.updateFile(old_str2, new_str2, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\CustomerRepository.txt");
+
+
+
+        // update Barista order count
+        String str = textFileUtils.readFile(new File("C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\BaristaRepository.txt"));
+        String[] str_arr = str.split(";");
+        String[] each_arr;
+        String[] each_arr2;
+        String each_str = "";
+        String index_str = "";
+        String count_str = "";
+        String is_working_str = "";
+
+        for (int i = 0; i < str_arr.length; i++) {
+            each_arr = str_arr[i].split("/");
+            if (each_arr[0].equals(typeChangeUtils.intToString(order.getBarista_index()))) {
+                each_str = str_arr[i];
+            }
+        }
+        each_arr2 = each_str.split("/");
+        index_str = each_arr2[0];
+        count_str = each_arr2[1];
+        is_working_str = each_arr2[2];
+
+
+        int index = typeChangeUtils.StringToInt(index_str);
+        int count = typeChangeUtils.StringToInt(count_str);
+
+        String input_index = "";
+        String input_count = "";
+        String input_is_working = "";
+        if (count > 1) {
+            input_index = typeChangeUtils.intToString(index);
+            input_count = typeChangeUtils.intToString(count-1);
+            input_is_working = "1";
+        } else if (count == 1) {
+            input_index = typeChangeUtils.intToString(index);
+            input_count = typeChangeUtils.intToString(count-1);
+            input_is_working = "0";
+        }
+
+
+        String old_str3 = index_str + "/" + count_str + "/" + is_working_str + ";";
+        String new_str3 = input_index + "/" + input_count + "/" + input_is_working + ";";
+        boolean success3 = textFileUtils.updateFile(old_str3, new_str3, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\BaristaRepository.txt");
 
         // Success on data update
         boolean success;
-        if (success1 && success2) {
+        if (success1 && success2 && success3) {
             success = true;
         } else {
             success = false;
