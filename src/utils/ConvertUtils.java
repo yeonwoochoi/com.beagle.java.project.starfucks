@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * A class that has a method that converts data type while processing data loaded from text file saved in repository package.
+ */
 public class ConvertUtils {
 
     /**
@@ -29,37 +32,53 @@ public class ConvertUtils {
     }
 
     /**
-     * Returns a string array created by extracting only the ordered food names from the objects stored in the queue.
-     * @param queue
+     * Returns a string array created by extracting only the ordered food names from the objects stored in FoodRepository.txt.
+     * @param
      * @return string array to store food names
      */
-    public String[] queueToProductName (Queue queue) {
-        Object object;
-        String[] strArr = new String[queue.size()];
+    public String[] ReadProductName() {
+        TextFileUtils textFileUtils = new TextFileUtils();
 
-        for (int i = 0; i < queue.size(); i++) {
-            object = ((LinkedList) queue).get(i);
-            strArr[i] = ((String[]) object)[0];
+
+        String food_str = textFileUtils.readFile(new File("C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\FoodRepository.txt"));
+        String[] food_arr = food_str.split(";");
+
+        String[] each_food_arr;
+        String[] each_food_name_arr = new String[food_arr.length];
+
+
+        for (int i = 0; i < food_arr.length; i++) {
+            each_food_arr = food_arr[i].split("/");
+            each_food_name_arr[i] = each_food_arr[1];
         }
 
-        return strArr;
+        return each_food_name_arr;
     }
 
     /**
      * A method that returns an int array created by extracting only the ordered food prices among the objects stored in the queue.
-     * @param queue
+     * @param
      * @return int array to store price
      */
-    public int[] queueToProductPrice (Queue queue) {
-        Object object;
-        int[] intArr = new int[queue.size()];
+    public int[] ReadProductPrice() {
+        TextFileUtils textFileUtils = new TextFileUtils();
 
-        for (int i = 0; i < queue.size(); i++) {
-            object = ((LinkedList) queue).get(i);
-            intArr[i] = ((int[]) object)[1];
+
+        String food_str = textFileUtils.readFile(new File("C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\FoodRepository.txt"));
+        String[] food_arr = food_str.split(";");
+
+        String[] each_food_arr;
+        String[] each_food_price_arr = new String[food_arr.length];
+
+
+        for (int i = 0; i < food_arr.length; i++) {
+            each_food_arr = food_arr[i].split("/");
+            each_food_price_arr[i] = each_food_arr[2];
         }
 
-        return intArr;
+        int[] output = StringArrayToIntArray(each_food_price_arr);
+
+        return output;
     }
 
 
@@ -70,7 +89,7 @@ public class ConvertUtils {
      */
     public Queue fileTextToQueue(String file_name) {
 
-        String str = null;
+        String str = "";
         Queue queue = new LinkedList();
         String[] strings;
         TextFileUtils textFileUtils = new TextFileUtils();
@@ -88,6 +107,7 @@ public class ConvertUtils {
         }
 
 
+
         strings = str.split(";");
         Object strArr;
         for (int i = 0; i < strings.length; i++) {
@@ -103,4 +123,36 @@ public class ConvertUtils {
 
         return queue;
     }
+
+
+    /**
+     * Method to convert String array to int array
+     * @param input
+     * @return (int) array
+     */
+    public int[] StringArrayToIntArray (String[] input) {
+        TypeChangeUtils typeChangeUtils = new TypeChangeUtils();
+        int[] new_objects = new int[input.length];
+        for (int i = 0; i < input.length; i++) {
+            new_objects[i] = typeChangeUtils.StringToInt(input[i]);
+        }
+        return new_objects;
+    }
+
+
+    /**
+     * Method to convert int array to string array
+     * @param input
+     * @return (String) array
+     */
+    public String[] IntArrayToStringArray (int[] input) {
+        TypeChangeUtils typeChangeUtils = new TypeChangeUtils();
+        String[] new_objects = new String[input.length];
+        for (int i = 0; i < input.length; i++) {
+            new_objects[i] = typeChangeUtils.intToString(i);
+        }
+        return new_objects;
+    }
+
+
 }

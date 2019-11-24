@@ -1,41 +1,154 @@
 package service;
 
+import controller.BaristaController;
 import domain.order.Order;
+import domain.order.Receipt;
+import utils.CalculateUtils;
+import utils.ConvertUtils;
 import utils.TextFileUtils;
-import utils.TypeChange;
-import utils.UtilMethods;
+import utils.TypeChangeUtils;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Scanner;
+import java.io.File;
+import java.util.ArrayList;
 
+
+
+
+/**
+ * A class with methods that handle the required processes in the ordering process
+ */
 public class OrderProcess {
-    public boolean createOrder(String[] order_name, int[] order_price, int[] order_count) {
-        Queue each_queue = new LinkedList();
+
+    /**
+     * Method that creates data of Order type and saves data in OrderRepository.txt when order is received
+     * @param order_name
+     * @param order_price
+     * @param order_count
+     * @return (Order) Order type of received order data
+     */
+    public Order createOrder(String[] order_name, int[] order_price, int[] order_count) {
+        ArrayList arrayList = new ArrayList();
+        CalculateUtils calculateUtils = new CalculateUtils();
         TextFileUtils textFileUtils = new TextFileUtils();
+        TypeChangeUtils typeChangeUtils = new TypeChangeUtils();
+        ConvertUtils convertUtils = new ConvertUtils();
         String each_name;
-        int each_price;
-        int each_count;
-        int total_time = 0;
+        String each_price;
+        String each_count;
+
+        // get consumed total_time
+        int total_time = calculateUtils.TotalTime(order_name, order_count);
+
+        // create ArrayList order_content
         for (int i = 0; i < order_name.length; i++) {
             each_name = order_name[i];
-            each_price = order_price[i];
-            each_count = order_count[i];
+            each_price = typeChangeUtils.intToString(order_price[i]);
+            each_count = typeChangeUtils.intToString(order_count[i]);
 
-            String findStr = textFileUtils.findData(order_name[i], "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\FoodRepository.txt");
-            Object[] findArr = findStr.split("/");
-            if (findArr[3] instanceof String) {
-                TypeChange typeChange = new TypeChange();
-                int each_time = typeChange.StringToInt((String) findArr[3]);
-                total_time += each_time;
-            }
+            String[] object = {each_name, each_price, each_count};
 
-            Object[] each_object = new Object[order_name.length];
 
-            each_queue.offer(each_object);
+            arrayList.add(object);
         }
-        //Order order = new Order();
-        //order.setBarista_index(1);
-        return true;
+
+        // get order_number
+        String order_number_str = textFileUtils.readFile(new File("C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\OrderNumberRepository.txt"));
+        int order_number = typeChangeUtils.StringToInt(order_number_str);
+
+        // get barista_index
+        BaristaController baristaController = new BaristaController();
+        int barista_number = baristaController.GivingBaristaNumber();
+
+
+        // Final creation of order of order type
+        Order order = new Order(order_number, barista_number, arrayList);
+        order.setTotal_time(total_time);
+
+        // Store received order in OrderRepository.txt
+        String input_str = order.getOrder_number() + "/" + order.getTotal_time() + ";";
+        textFileUtils.saveToFile(input_str, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\OrderRepository.txt");
+
+        // Giving customer a vibrating bell
+        String input_str2 = order.getOrder_number() + "/" + "O;";
+        textFileUtils.saveToFile(input_str2, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\CustomerRepository.txt");
+
+
+        return order;
+    }
+
+
+
+    /**
+     * Runs when a received order is processed, retrieves the vibration bell of the customer data stored in the customerRepository, and removes the data stored in the orderRepository
+     * @param order
+     * @return (boolean) success
+     */
+    public boolean DeleteOrder(Order order) {
+
+        // Remove processed order from OrderRepository
+        String old_str1 = order.getOrder_number() + "/" + order.getTotal_time() + ";";
+        String new_str1 = "";
+        TextFileUtils textFileUtils = new TextFileUtils();
+        boolean success1 = textFileUtils.updateFile(old_str1, new_str1, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\OrderRepository.txt");
+
+        // withdraw Vibration bell of customer who received food
+        String old_str2 = order.getOrder_number() + "/" + "O;";
+        String new_str2 = order.getOrder_number() + "/" + "X;";
+        boolean success2 = textFileUtils.updateFile(old_str2, new_str2, "C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\CustomerRepository.txt");
+
+        // Success on data update
+        boolean success;
+        if (success1 && success2) {
+            success = true;
+        } else {
+            success = false;
+        }
+
+        return success;
+    }
+
+
+    /**
+     * Method to make receipt of input order
+     * @param order
+     * @return (String) Converting the receipt to a string using the toString method of the Receipt class
+     */
+    public String MakeReceipt(Order order) {
+
+        // Load data stored in Order object and declare it as variable
+        ConvertUtils convertUtils = new ConvertUtils();
+        int order_number = order.getOrder_number();
+        ArrayList arrayList = order.getOrder_content();
+        arrayList.trimToSize();
+
+        // Declare String array to store ordered food name and price
+        String[] name_arr = new String[arrayList.size()];
+        String[] price_arr = new String[arrayList.size()];
+        String[] count_arr = new String[arrayList.size()];
+
+        // Save the ordered food name and price
+        for (int i = 0; i < arrayList.size(); i++) {
+            String[] each_str_arr = (String[]) arrayList.get(i);
+            name_arr[i] = each_str_arr[0];
+        }
+
+        for (int i = 0; i < arrayList.size(); i++) {
+            String[] each_str_arr = (String[]) arrayList.get(i);
+            price_arr[i] = each_str_arr[1];
+        }
+
+        for (int i = 0; i < arrayList.size(); i++) {
+            String[] each_str_arr = (String[]) arrayList.get(i);
+            count_arr[i] = each_str_arr[2];
+        }
+
+        int[] new_price_arr = convertUtils.StringArrayToIntArray(price_arr);
+        int[] new_count_arr = convertUtils.StringArrayToIntArray(count_arr);
+
+
+        // Save order data in Receipt class and call toString method
+        Receipt receipt = new Receipt(order_number, name_arr, new_price_arr, new_count_arr);
+
+        return receipt.toString();
     }
 }

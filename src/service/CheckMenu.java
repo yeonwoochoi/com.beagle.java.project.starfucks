@@ -2,8 +2,8 @@ package service;
 
 import utils.ConvertUtils;
 import utils.TextFileUtils;
-import utils.UtilMethods;
 
+import java.io.File;
 import java.util.Queue;
 
 /**
@@ -15,20 +15,37 @@ public class CheckMenu {
      * @return String menu
      */
     public String  ShowMenuList () {
-        ConvertUtils convertUtils = new ConvertUtils();
 
-        Queue queueBeverage = convertUtils.fileTextToQueue("BeverageRepository");
-        Queue queueDessert = convertUtils.fileTextToQueue("DessertRepository");
+        TextFileUtils textFileUtils = new TextFileUtils();
 
-        String beverageStr = "";
-        String dessertStr = "";
 
-        for (int i = 0; i < queueBeverage.size(); i++) {
-            beverageStr += convertUtils.queueToString(queueBeverage, i, " ") + "\n";
-            dessertStr += convertUtils.queueToString(queueDessert, i, " ") + "\n";
+        String beverage_str = "== beverage ==\n\n";
+        String dessert_str = "== dessert ==\n\n";
+
+        String food_str = textFileUtils.readFile(new File("C:\\Users\\최연우\\IdeaProjects\\com.beagle.java.project.starfucks\\src\\repository\\FoodRepository.txt"));
+        String[] food_arr = food_str.split(";");
+        String[] beverage_arr;
+        String[] dessert_arr;
+        for (int i = 0 ; i < 10; i++) {
+            beverage_arr = food_arr[i].split("/");
+            for (int j = 0 ; j < beverage_arr.length; j++) {
+                beverage_str += beverage_arr[j] + " ";
+            }
+            beverage_str += "\n";
         }
+        beverage_str += "\n\n";
 
-        String output = "== Beverage == +\n\n" + beverageStr + "\n" + "Dessert" + "\n\n" + dessertStr;
+        for (int i = 10; i < food_arr.length; i++) {
+            dessert_arr = food_arr[i].split("/");
+            for (int j = 0 ; j < dessert_arr.length; j++) {
+                dessert_str += dessert_arr[j] + " ";
+            }
+            dessert_str += "\n";
+        }
+        dessert_str += "\n\n";
+
+
+        String output = beverage_str + dessert_str;
 
         return output;
     }
